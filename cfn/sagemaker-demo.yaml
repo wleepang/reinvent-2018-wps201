@@ -1,4 +1,6 @@
-Description: " Creates resources (S3 Bucket, IAM roles, SageMaker Notebook instance) for the ML Workshop"
+Description: >-
+  Creates resources (S3 Bucket, IAM roles, SageMaker Notebook instance) for
+  the genomic clustering with SageMaker demo
 Parameters:
 
   NotebookInstanceType:
@@ -13,14 +15,15 @@ Parameters:
       - ml.m4.2xlarge
       - ml.p2.xlarge
       - ml.p3.2xlarge
-    Description: Enter a valid SageMaker notebook instance type. Defaults to ml.t2.medium.
+    Description: SageMaker notebook instance type. Defaults to ml.t2.medium.
 
   NotebookPrefix:
     Type: String
-    Description: Prefix for the notebook instance
+    Default: wps201
+    AllowedValues:
+      - wps201
 
 Resources:
-
   SageMakerIamRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -37,33 +40,24 @@ Resources:
         - "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
         - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
 
-  MLWorkshopS3Policy:
+  SageMakerS3Policy:
     Type: AWS::IAM::Policy
     Properties: 
-      PolicyName: "S3AccessGlueAndAthena"
+      PolicyName: !Sub "SageMaker-S3Access"
       PolicyDocument: 
         Version: "2012-10-17"
         Statement: 
-          - 
-            Effect: "Allow"
+          - Effect: "Allow"
             Action: 
               - "s3:GetObject"
               - "s3:PutObject"
               - "s3:DeleteObject"
               - "s3:ListBucket"
             Resource: "arn:aws:s3:::*"
-          - Effect: "Allow"
-            Action: 
-              - "glue:GetTables"
-              - "glue:GetTable"
-              - "athena:StartQueryExecution"
-              - "athena:GetQueryExecution"
-              - "athena:GetQueryResults"
-            Resource: "*"
       Roles: 
         - Ref: SageMakerIamRole
 
-  MLWorkshopLifecycleConfig:
+  NotebookLifecycleConfig:
     Type: "AWS::SageMaker::NotebookInstanceLifecycleConfig"
     Properties:
       OnCreate:
@@ -73,7 +67,8 @@ Resources:
               set -e
               sudo -i -u ec2-user bash << EOF
               echo "Setup the Workshop exercises"
-              git clone https://github.com/randyridgley/sagemaker-demo.git ~/SageMaker/mlworkshop/
+              # TODO: point this to a specific release, only include notebook material
+              git clone https://github.com/wleepang/reinvent-2018-wps201.git ~/SageMaker/wps201/
               EOF
       OnStart:
         - Content:
@@ -82,35 +77,33 @@ Resources:
               set -e
 
               echo "Creating custom conda enviornment"
-              cat > /home/ec2-user/mlworkshop-setup.sh << EOF
+              cat > /home/ec2-user/wps201-setup.sh << EOF
               #!/bin/bash
               set -e
-              cd /home/ec2-user/SageMaker/mlworkshop
+              cd /home/ec2-user/SageMaker/wps201
               echo "Updating base conda enviornment"
               conda update -n base conda -y
-              echo "Installing mlworkshop conda env"
+              echo "Installing wps201 conda env"
               conda env update
-              source activate mlworkshop
-              # echo "Installing AWS python libraries (sagemaker & boto3)"
-              # pip install sagemaker boto3 PyAthena
+              source activate wps201
               echo "Finished OnStart script"
               EOF
 
-              chown ec2-user:ec2-user /home/ec2-user/mlworkshop-setup.sh
-              chmod 755 /home/ec2-user/mlworkshop-setup.sh
+              chown ec2-user:ec2-user /home/ec2-user/wps201-setup.sh
+              chmod 755 /home/ec2-user/wps201-setup.sh
 
               sudo -i -u ec2-user bash << EOF
-              echo "Creating mlworkshop conda env in background process."
-              nohup /home/ec2-user/mlworkshop-setup.sh &
+              echo "Creating wps201 conda env in background process."
+              nohup /home/ec2-user/wps201-setup.sh &
               EOF
 
   SageMakerNotebookInstance:
     Type: "AWS::SageMaker::NotebookInstance"
     Properties:
-      NotebookInstanceName: !Sub ${NotebookPrefix}-MLWorkshopInstance
+      NotebookInstanceName: !Sub ${NotebookPrefix}-SessionInstance
       InstanceType: !Ref NotebookInstanceType
       RoleArn: !GetAtt SageMakerIamRole.Arn
-      LifecycleConfigName: !GetAtt MLWorkshopLifecycleConfig.NotebookInstanceLifecycleConfigName
+      LifecycleConfigName: !GetAtt NotebookLifecycleConfig.NotebookInstanceLifecycleConfigName
 
 Outputs:
   SageMakerNotebookInstance:
