@@ -65,18 +65,24 @@ Resources:
     Properties:
       OnCreate:
         - Content:
-            Fn::Base64: |
-              #!/bin/bash
-              set -e
-              sudo -i -u ec2-user bash << EOF
-              echo "Setup the Workshop exercises"
-              # TODO: point this to a specific release, only include notebook material
-              git clone https://github.com/wleepang/reinvent-2018-wps201.git ~/SageMaker/wps201/
-              
-              cd ~/SageMaker/wps201/ipynb
-              find -name '*.ipynb' -exec sed -i 's/<<your_s3_bucket_name_here>>/${S3Bucket}/g' {} +
-              
-              EOF
+            Fn::Base64: 
+              Fn::Sub: |
+                #!/bin/bash
+                set -e
+                sudo -i -u ec2-user bash << EOF
+                echo "Setup the Workshop exercises"
+                # TODO: point this to a specific release, only include notebook material
+                git clone https://github.com/wleepang/reinvent-2018-wps201.git ~/SageMaker/wps201/
+                
+                cd ~/SageMaker/wps201
+                find -name '*.ipynb' -exec sed -i 's/<<SageMakerS3Bucket>>/${S3Bucket}/g' {} +
+
+                mv ./ipynb/* .
+
+                rm -rf ./cfn
+                rmdir ./ipynb
+                
+                EOF
       OnStart:
         - Content:
             Fn::Base64: |
