@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Creates a custom AMI to be used with AWS Batch
+
+Resources:
+  EMRCluster:
+    Type: AWS::EMR::Cluster
+    Properties: 
+      AdditionalInfo: JSON object
+      Applications:
+        - Applications
+      AutoScalingRole: String      
+      BootstrapActions:
+        - Bootstrap Actions
+      Configurations:
+        - Configurations        
+      CustomAmiId: String
+      EbsRootVolumeSize: Integer
+      Instances:
+        JobFlowInstancesConfig
+      JobFlowRole: String
+      KerberosAttributes" : 
+        Amazon EMR Cluster KerberosAttributes
+      LogUri: String
+      Name: String
+      ReleaseLabel: String
+      ScaleDownBehavior: String
+      SecurityConfiguration: String
+      ServiceRole: String
+      Tags:
+        - Resource Tag
+      VisibleToAllUsers: Boolean
