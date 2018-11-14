@@ -1,0 +1,13 @@
+boto3
+numpy
+scipy
+matplotlib
+seaborn
+pandas
+scikit-learn
+h5py
+numexpr
+bcolz
+zarr
+dask[array]
+scikit-allel
