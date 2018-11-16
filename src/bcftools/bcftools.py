@@ -60,6 +60,10 @@ def main(args):
 
             with open(output_file, 'rb') as data:
                 s3.upload_fileobj(data, bucket, key)
+            
+            # important to clean up the scratch space since it is shared
+            # by multiple tasks
+            os.remove(output_file)
 
 
 if __name__ == '__main__':
