@@ -1,2 +1,4 @@
 launch.sh
 notes.md
+.ipynb_checkpoints/
+__pycache__/
