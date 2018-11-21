@@ -59,8 +59,8 @@ VCF_FILES = {
 
 ## USER SETTINGS
 # these values injected by CloudFormation
-S3_OUTPUT = "<<SageMakerS3Bucket>>/data"  # "s3://pwyming-wps201-us-east-1/data"
-QUEUE_ARN = "<<BatchJobQueueArn>>"  # "arn:aws:batch:us-east-1:402873085799:job-queue/wps201-queue"
+S3_OUTPUT = "s3://<<SageMakerS3Bucket>>/data"  # S3 bucket to store processed data
+QUEUE_ARN = "<<BatchJobQueueArn>>"  # AWS Batch Job Queue (ARN) used to process data
 
 
 def s3path(s3url):
