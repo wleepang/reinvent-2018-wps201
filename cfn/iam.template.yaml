@@ -36,6 +36,7 @@ Resources:
                 - "ecs-tasks.amazonaws.com"
             Action:
               - "sts:AssumeRole"
+
   BatchInstanceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -60,16 +61,17 @@ Resources:
                   - !Join ["", ["arn:aws:s3:::", !Ref S3BucketName, "/*"]]
                 Action:
                   - "s3:*"
- 
       ManagedPolicyArns:
       - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
       - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
       - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+
   BatchInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles:
         - Ref: BatchInstanceRole
+  
   BatchSpotFleetRole:
     Type: AWS::IAM::Role
     Properties:
@@ -84,6 +86,7 @@ Resources:
               - "sts:AssumeRole"
       ManagedPolicyArns:
       - "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+
   BatchServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -96,6 +99,36 @@ Resources:
           Action: sts:AssumeRole
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+  
+
+  SageMakerExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "sagemaker.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: !Sub "S3Bucket-Access-${AWS::Region}"
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action: 
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "s3:DeleteObject"
+                  - "s3:ListBucket"
+                Resource: "arn:aws:s3:::*"
+      Path: "/service-role/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+        - "arn:aws:iam::aws:policy/AWSBatchFullAccess"
+
 Outputs:
   BatchJobRoleArn:
     Value: !GetAtt BatchJobRole.Arn
@@ -105,3 +138,5 @@ Outputs:
     Value: !GetAtt BatchSpotFleetRole.Arn
   BatchInstanceProfileArn:
     Value: !GetAtt BatchInstanceProfile.Arn
+  SageMakerExecutionRoleArn:
+    Value: !GetAtt SageMakerExecutionRole.Arn

@@ -1,6 +1,7 @@
+---
 Description: >-
-  Creates resources (S3 Bucket, IAM roles, SageMaker Notebook instance) for
-  the genomic clustering with SageMaker demo
+  Creates a SageMaker Notebook instance for the genomic clustering with SageMaker demo
+  
 Parameters:
 
   NotebookInstanceType:
@@ -22,44 +23,17 @@ Parameters:
     Default: wps201
     AllowedValues:
       - wps201
+  
+  S3Bucket:
+    Type: String
+  
+  SageMakerExecutionRoleArn:
+    Type: String
+  
+  BatchJobQueueArn:
+    Type: String
 
 Resources:
-  S3Bucket:
-    Type: AWS::S3::Bucket
-  
-  SageMakerIamRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName: !Sub ${NotebookPrefix}-AmazonSageMaker-ExecutionRole
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: "sagemaker.amazonaws.com"
-            Action: "sts:AssumeRole"
-      Path: "/service-role/"
-      ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
-        - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-
-  SageMakerS3Policy:
-    Type: AWS::IAM::Policy
-    Properties: 
-      PolicyName: !Sub "SageMaker-S3Access"
-      PolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - Effect: "Allow"
-            Action: 
-              - "s3:GetObject"
-              - "s3:PutObject"
-              - "s3:DeleteObject"
-              - "s3:ListBucket"
-            Resource: "arn:aws:s3:::*"
-      Roles: 
-        - Ref: SageMakerIamRole
-
   NotebookLifecycleConfig:
     Type: "AWS::SageMaker::NotebookInstanceLifecycleConfig"
     Properties:
@@ -77,9 +51,15 @@ Resources:
                 cd ~/SageMaker/wps201
                 find -name '*.ipynb' -exec sed -i 's/<<SageMakerS3Bucket>>/${S3Bucket}/g' {} +
 
-                mv ./ipynb/* .
+                find -name '*.py' -exec sed -i 's/<<SageMakerS3Bucket>>/${S3Bucket}/g' {} +
+                find -name '*.py' -exec sed -i 's/<<BatchJobQueueArn>>/${BatchJobQueueArn}/g' {} +
 
+                mv ./ipynb/* .
+                mv ./src/submit_jobs.py .
+
+                rm .gitignore
                 rm -rf ./cfn
+                rm -rf ./src
                 rmdir ./ipynb
                 
                 EOF
@@ -89,7 +69,7 @@ Resources:
               #!/bin/bash
               set -e
 
-              echo "Creating custom conda enviornment"
+              echo "Creating custom conda environment"
               cat > /home/ec2-user/wps201-setup.sh << EOF
               #!/bin/bash
               set -e
@@ -115,11 +95,9 @@ Resources:
     Properties:
       NotebookInstanceName: !Sub ${NotebookPrefix}-SessionInstance
       InstanceType: !Ref NotebookInstanceType
-      RoleArn: !GetAtt SageMakerIamRole.Arn
+      RoleArn: !Ref SageMakerExecutionRoleArn
       LifecycleConfigName: !GetAtt NotebookLifecycleConfig.NotebookInstanceLifecycleConfigName
 
 Outputs:
   SageMakerNotebookInstance:
     Value: !GetAtt SageMakerNotebookInstance.NotebookInstanceName
-  IAMRole:
-    Value: !GetAtt SageMakerIamRole.Arn

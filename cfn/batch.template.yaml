@@ -1,28 +1,22 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 Description: >
-    Deploys resources for AWS Batch.
+    Creates resources for AWS Batch.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
           default: "AWS Batch Environment Config"
         Parameters:
-        - Ec2KeyPairName
         - VpcId
         - SubnetIds
         - SpotBidPercentage
         - DefaultCEMinvCpus
         - DefaultCEMaxvCpus
-        - HighPriorityCEMinvCpus
-        - HighPriorityCEMaxvCpus
-        - DefaultRetryNumber
         - BatchServiceRoleArn
         - Ec2InstanceProfileArn
         - SpotFleetRoleArn
     ParameterLabels:
-      Ec2KeyPairName:
-        default: EC2 Key Pair Name
       VpcId:
         default: VPC ID
       SubnetIds:
@@ -39,6 +33,7 @@ Metadata:
         default: EC2 Instance Profile ARN
       SpotFleetRoleArn:
         default: Spot Fleet Role ARN
+
 Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id
@@ -52,12 +47,9 @@ Parameters:
     MaxValue: 100
     MinValue: 5
     Default: 100
-  Ec2KeyPairName:
-    Type: AWS::EC2::KeyPair::KeyName
-    Description: Name of the EC2 Key Pair for connecting to EC2 instances launched in your compute environment
   DefaultCEMinvCpus:
     Type: Number
-    Description: Minimum number of CPUs in the default compute environment. Default 0.
+    Description: Minimum number of CPUs in the default compute environment. Default 0 (i.e. no active instances if no jobs).
     Default: 4
     MinValue: 0
   DefaultCEMaxvCpus:
@@ -82,6 +74,7 @@ Resources:
       GroupDescription: SG for Batch
       VpcId:
         Ref: VpcId
+
   SGSSHIngress:
     Type: AWS::EC2::SecurityGroupIngress
     DependsOn: BatchSecurityGroup
@@ -91,6 +84,7 @@ Resources:
       FromPort: 22
       ToPort: 22
       CidrIp: 0.0.0.0/0
+
   SGAllTcpEgress:
     Type: AWS::EC2::SecurityGroupEgress
     DependsOn: BatchSecurityGroup
@@ -100,6 +94,7 @@ Resources:
       FromPort: 0
       ToPort: 65535
       CidrIp: 0.0.0.0/0
+
   SGAllTcpSelfIngress:
     Type: AWS::EC2::SecurityGroupIngress
     DependsOn: BatchSecurityGroup
@@ -109,6 +104,26 @@ Resources:
       FromPort: 0
       ToPort: 65535
       SourceSecurityGroupId: !Ref BatchSecurityGroup
+  
+  WPS201VcfFilterJobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      JobDefinitionName: wps201_vcf_filter
+      ContainerProperties:
+        Image: 'oddhypothesis/bcftools:1.9-aws'
+        Vcpus: 2
+        Memory: 4096
+  
+  WPS201FeatureFilterJobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      JobDefinitionName: wps201_feature_filter
+      ContainerProperties:
+        Image: 'oddhypothesis/allel:latest'
+        Vcpus: 2
+        Memory: 4096
 
   DefaultComputeEnv:
     Type: AWS::Batch::ComputeEnvironment
@@ -119,7 +134,6 @@ Resources:
       State: ENABLED
       ComputeResources:
         BidPercentage: !Ref SpotBidPercentage
-        Ec2KeyPair: !Ref Ec2KeyPairName
         InstanceRole: !Ref Ec2InstanceProfileArn
         InstanceTypes:
           - optimal
@@ -143,3 +157,8 @@ Resources:
 Outputs:
   DefaultJobQueueArn:
     Value: !Ref DefaultQueue
+  WPS201VcfFilterJobDefinitionArn:
+    Value: !Ref WPS201VcfFilterJobDefinition
+  WPS201FeatureFilterJobDefinitionArn:
+    Value: !Ref WPS201FeatureFilterJobDefinition
+...
