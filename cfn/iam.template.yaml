@@ -104,6 +104,7 @@ Resources:
   SageMakerExecutionRole:
     Type: "AWS::IAM::Role"
     Properties:
+      RoleName: !Sub ${AWS::StackName}-AmazonSageMaker-ExecutionRole
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -128,6 +129,7 @@ Resources:
         - "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
         - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
         - "arn:aws:iam::aws:policy/AWSBatchFullAccess"
+
 
 Outputs:
   BatchJobRoleArn:
