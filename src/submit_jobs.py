@@ -33,6 +33,7 @@ parser.add_argument(
     """
 )
 
+## SOURCE DATA
 # creates a mapping of the source vcf files from the 1000genomes public dataset
 # to the processed vcf file produced from the batch pipeline
 # Example:
@@ -40,8 +41,8 @@ parser.add_argument(
 #   'chr10.freq60.biallelic.snps.vcf.gz': 'ALL.chr10.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz',
 #   ... }
 S3 = boto3.resource('s3')
-BUCKET = "1000genomes"
-PREFIX = "release/20130502"
+SRC_BUCKET = "1000genomes"
+SRC_PREFIX = "release/20130502"
 PROCESSING = "freq60.biallelic.snps"
 VCF_FILES = {
     re.sub(
@@ -51,13 +52,15 @@ VCF_FILES = {
     ) : vcf_file
     for vcf_file in [
         os.path.basename(o.key)
-        for o in S3.Bucket(BUCKET).objects.filter(Prefix=PREFIX)
-        if o.key.endswith('.vcf.gz') and os.path.dirname(o.key) == PREFIX
+        for o in S3.Bucket(SRC_BUCKET).objects.filter(Prefix=SRC_PREFIX)
+        if o.key.endswith('.vcf.gz') and os.path.dirname(o.key) == SRC_PREFIX
 ]}
 
 
-S3_OUTPUT = "s3://pwyming-wps201-us-east-1/data"
-QUEUE_ARN = "arn:aws:batch:us-east-1:402873085799:job-queue/wps201-queue"
+## USER SETTINGS
+# these values injected by CloudFormation
+S3_OUTPUT = "<<SageMakerS3Bucket>>/data"  # "s3://pwyming-wps201-us-east-1/data"
+QUEUE_ARN = "<<BatchJobQueueArn>>"  # "arn:aws:batch:us-east-1:402873085799:job-queue/wps201-queue"
 
 
 def s3path(s3url):
@@ -87,7 +90,7 @@ def vcf_filter(session):
         command = [
             "--s3-output", f"{S3_OUTPUT}/{target}",
             "--bcftools-args", "view -m2 -M2 -q 0.6 -v snps",
-            "--vcf-input", f"s3://1000genomes/release/20130502/{source}",
+            "--vcf-input", f"s3://{SRC_BUCKET}/{SRC_PREFIX}/{source}",
         ]
 
         try:
