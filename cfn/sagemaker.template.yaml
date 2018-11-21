@@ -1,7 +1,7 @@
 ---
 Description: >-
   Creates a SageMaker Notebook instance for the genomic clustering with SageMaker demo
-  
+
 Parameters:
 
   NotebookInstanceType:
@@ -74,11 +74,10 @@ Resources:
               #!/bin/bash
               set -e
               cd /home/ec2-user/SageMaker/wps201
-              echo "Updating base conda enviornment"
+              echo "Updating base conda environment"
               conda update -n base conda -y
-              echo "Installing wps201 conda env"
-              conda env update
-              source activate wps201
+              echo "Installing extra dependencies"
+              conda env update -f environment.yaml
               echo "Finished OnStart script"
               EOF
 
