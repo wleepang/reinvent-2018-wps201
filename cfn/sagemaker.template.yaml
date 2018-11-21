@@ -40,9 +40,9 @@ Resources:
                 sudo -i -u ec2-user bash << EOF
                 echo "Setup the Workshop exercises"
                 
-                git clone https://github.com/wleepang/reinvent-2018-wps201.git ~/SageMaker/wps201/
+                git clone https://github.com/wleepang/reinvent-2018-wps201.git ~/SageMaker/${AWS::StackName}/
                 
-                cd ~/SageMaker/wps201
+                cd ~/SageMaker/${AWS::StackName}
                 find -name '*.ipynb' -exec sed -i 's/<<SageMakerS3Bucket>>/${S3Bucket}/g' {} +
 
                 find -name '*.py' -exec sed -i 's/<<SageMakerS3Bucket>>/${S3Bucket}/g' {} +
@@ -59,29 +59,32 @@ Resources:
                 EOF
       OnStart:
         - Content:
-            Fn::Base64: |
-              #!/bin/bash
-              set -e
+            Fn::Base64: 
+              Fn::Sub: |
+                #!/bin/bash
+                set -e
 
-              echo "Creating custom conda environment"
-              cat > /home/ec2-user/wps201-setup.sh << EOF
-              #!/bin/bash
-              set -e
-              cd /home/ec2-user/SageMaker/wps201
-              echo "Updating base conda environment"
-              conda update -n base conda -y
-              echo "Installing extra dependencies"
-              conda env update -f environment.yaml
-              echo "Finished OnStart script"
-              EOF
+                echo "Creating custom conda environment"
+                cat > /home/ec2-user/${AWS::StackName}-setup.sh << EOF
+                #!/bin/bash
+                set -e
+                cd /home/ec2-user/SageMaker/${AWS::StackName}
+                echo "Updating base conda environment"
+                conda update -n base conda -y
 
-              chown ec2-user:ec2-user /home/ec2-user/wps201-setup.sh
-              chmod 755 /home/ec2-user/wps201-setup.sh
+                echo "Installing extra dependencies"
+                conda env update -f environment.yaml
+                
+                echo "Finished OnStart script"
+                EOF
 
-              sudo -i -u ec2-user bash << EOF
-              echo "Creating wps201 conda env in background process."
-              nohup /home/ec2-user/wps201-setup.sh &
-              EOF
+                chown ec2-user:ec2-user /home/ec2-user/${AWS::StackName}-setup.sh
+                chmod 755 /home/ec2-user/${AWS::StackName}-setup.sh
+
+                sudo -i -u ec2-user bash << EOF
+                echo "Creating ${AWS::StackName} conda env in background process."
+                nohup /home/ec2-user/${AWS::StackName}-setup.sh &
+                EOF
 
   SageMakerNotebookInstance:
     Type: "AWS::SageMaker::NotebookInstance"
