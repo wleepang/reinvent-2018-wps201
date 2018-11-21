@@ -43,7 +43,7 @@ parser.add_argument(
 S3 = boto3.resource('s3')
 SRC_BUCKET = "1000genomes"
 SRC_PREFIX = "release/20130502"
-PROCESSING = "freq60.biallelic.snps"
+PROCESSING = "freq30.biallelic.snps"
 VCF_FILES = {
     re.sub(
         '^.*?(chr[0-9XY]+|wgs).*?(vcf.gz)$',
@@ -89,7 +89,7 @@ def vcf_filter(session):
     for target, source in VCF_FILES.items():
         command = [
             "--s3-output", f"{S3_OUTPUT}/{target}",
-            "--bcftools-args", "view -m2 -M2 -q 0.6 -v snps",
+            "--bcftools-args", "view -m2 -M2 -q 0.3 -v snps",
             "--vcf-input", f"s3://{SRC_BUCKET}/{SRC_PREFIX}/{source}",
         ]
 
