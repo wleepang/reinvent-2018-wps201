@@ -3,15 +3,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: "re:Invent 2018 Builder Session WPS201"
 Metadata:
   AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: "AWS Batch Parameters"
-        Parameters:
-          - VpcId
-          - SubnetIds
-          - SpotBidPercentage
-          - DefaultCEMinvCpus
-          - DefaultCEMaxvCpus
     ParameterLabels:
       VpcId:
         default: VPC ID
@@ -96,10 +87,10 @@ Outputs:
     Value: !Sub ${S3Stack.Outputs.BucketName}
     Export:
         Name: !Sub "${AWS::StackName}-S3Bucket"
-  DefaultJobQueueArn:
+  BatchJobQueueArn:
     Value: !Sub ${BatchStack.Outputs.DefaultJobQueueArn}
     Export:
-        Name: !Sub "${AWS::StackName}-DefaultJobQueueArn"
+        Name: !Sub "${AWS::StackName}-BatchJobQueueArn"
   SageMakerNotebookInstance:
     Value: !Sub ${SageMakerStack.Outputs.SageMakerNotebookInstance}
     Export:
