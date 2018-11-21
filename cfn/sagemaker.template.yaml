@@ -17,12 +17,6 @@ Parameters:
       - ml.p2.xlarge
       - ml.p3.2xlarge
     Description: SageMaker notebook instance type. Defaults to ml.t2.medium.
-
-  NotebookPrefix:
-    Type: String
-    Default: wps201
-    AllowedValues:
-      - wps201
   
   S3Bucket:
     Type: String
@@ -92,7 +86,7 @@ Resources:
   SageMakerNotebookInstance:
     Type: "AWS::SageMaker::NotebookInstance"
     Properties:
-      NotebookInstanceName: !Sub ${NotebookPrefix}-SessionInstance
+      NotebookInstanceName: !Sub ${AWS::StackName}-SessionInstance
       InstanceType: !Ref NotebookInstanceType
       RoleArn: !Ref SageMakerExecutionRoleArn
       LifecycleConfigName: !GetAtt NotebookLifecycleConfig.NotebookInstanceLifecycleConfigName
