@@ -39,7 +39,7 @@ Resources:
                 set -e
                 sudo -i -u ec2-user bash << EOF
                 echo "Setup the Workshop exercises"
-                # TODO: point this to a specific release, only include notebook material
+                
                 git clone https://github.com/wleepang/reinvent-2018-wps201.git ~/SageMaker/wps201/
                 
                 cd ~/SageMaker/wps201
