@@ -3,6 +3,14 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: "re:Invent 2018 Builder Session WPS201"
 Metadata:
   AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "AWS Batch Environment Config"
+        Parameters:
+        - VpcId
+        - SubnetIds
+        - SpotBidPercentage
+    
     ParameterLabels:
       VpcId:
         default: VPC ID
@@ -10,10 +18,6 @@ Metadata:
         default: VPC Subnet IDs
       SpotBidPercentage:
         default: Spot Bid %
-      DefaultCEMinvCpus:
-        default: Default Min vCPU
-      DefaultCEMaxvCpus:
-        default: Default Max vCPU
 
 Parameters:
   VpcId:
@@ -24,14 +28,6 @@ Parameters:
     Description: 'Subnets you want your batch compute environment to launch in. We recommend private subnets. NOTE: Must be from the VPC provided.'
   SpotBidPercentage:
     Description: The percent of on-demand pricing for max bid for Spot intances
-    Type: Number
-    Default: 100
-  DefaultCEMinvCpus:
-    Description: The minimum number of CPUs for the default Batch Compute Environment
-    Type: Number
-    Default: 0
-  DefaultCEMaxvCpus:
-    Description: The maximum number of CPUs for the default Batch Compute Environment
     Type: Number
     Default: 100
 
@@ -62,8 +58,8 @@ Resources:
         VpcId: !Ref VpcId
         SubnetIds: !Join [",", !Ref SubnetIds ]
         SpotBidPercentage: !Ref SpotBidPercentage
-        DefaultCEMinvCpus: !Ref DefaultCEMinvCpus
-        DefaultCEMaxvCpus: !Ref DefaultCEMaxvCpus
+        DefaultCEMinvCpus: '0'
+        DefaultCEMaxvCpus: '100'
         BatchServiceRoleArn: !Sub ${IamStack.Outputs.BatchServiceRoleArn}
         Ec2InstanceProfileArn: !Sub ${IamStack.Outputs.BatchInstanceProfileArn}
         SpotFleetRoleArn: !Sub ${IamStack.Outputs.BatchSpotFleetRoleArn}
