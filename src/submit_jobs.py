@@ -5,6 +5,7 @@ from the 1000 genomes public dataset
 """
 
 import os
+import re
 import argparse
 
 import boto3
@@ -32,38 +33,28 @@ parser.add_argument(
     """
 )
 
-
-# for purposes of deadlines these paths are hard coded
-# TODO: use the S3 client to get this listing dynamically
+# creates a mapping of the source vcf files from the 1000genomes public dataset
+# to the processed vcf file produced from the batch pipeline
+# Example:
+#  {'chr1.freq60.biallelic.snps.vcf.gz': 'ALL.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz',
+#   'chr10.freq60.biallelic.snps.vcf.gz': 'ALL.chr10.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz',
+#   ... }
+S3 = boto3.resource('s3')
 BUCKET = "1000genomes"
 PREFIX = "release/20130502"
+PROCESSING = "freq60.biallelic.snps"
 VCF_FILES = {
-    "chr1.freq60.biallelic.snps.vcf.gz": "ALL.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr2.freq60.biallelic.snps.vcf.gz": "ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr3.freq60.biallelic.snps.vcf.gz": "ALL.chr3.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr4.freq60.biallelic.snps.vcf.gz": "ALL.chr4.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr5.freq60.biallelic.snps.vcf.gz": "ALL.chr5.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr6.freq60.biallelic.snps.vcf.gz": "ALL.chr6.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr7.freq60.biallelic.snps.vcf.gz": "ALL.chr7.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr8.freq60.biallelic.snps.vcf.gz": "ALL.chr8.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr9.freq60.biallelic.snps.vcf.gz": "ALL.chr9.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr10.freq60.biallelic.snps.vcf.gz": "ALL.chr10.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr11.freq60.biallelic.snps.vcf.gz": "ALL.chr11.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr12.freq60.biallelic.snps.vcf.gz": "ALL.chr12.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr13.freq60.biallelic.snps.vcf.gz": "ALL.chr13.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr14.freq60.biallelic.snps.vcf.gz": "ALL.chr14.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr15.freq60.biallelic.snps.vcf.gz": "ALL.chr15.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr16.freq60.biallelic.snps.vcf.gz": "ALL.chr16.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr17.freq60.biallelic.snps.vcf.gz": "ALL.chr17.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr18.freq60.biallelic.snps.vcf.gz": "ALL.chr18.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr19.freq60.biallelic.snps.vcf.gz": "ALL.chr19.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr20.freq60.biallelic.snps.vcf.gz": "ALL.chr20.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr21.freq60.biallelic.snps.vcf.gz": "ALL.chr21.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chr22.freq60.biallelic.snps.vcf.gz": "ALL.chr22.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-    "chrX.freq60.biallelic.snps.vcf.gz": "ALL.chrX.phase3_shapeit2_mvncall_integrated_v1b.20130502.genotypes.vcf.gz",
-    "chrY.freq60.biallelic.snps.vcf.gz": "ALL.chrY.phase3_integrated_v1b.20130502.genotypes.vcf.gz",
-    "wgs.freq60.biallelic.snps.vcf.gz": "ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz",
-}
+    re.sub(
+        '^.*?(chr[0-9XY]+|wgs).*?(vcf.gz)$',
+        f'\\1.{PROCESSING}.\\2',
+        vcf_file
+    ) : vcf_file
+    for vcf_file in [
+        os.path.basename(o.key)
+        for o in S3.Bucket(BUCKET).objects.filter(Prefix=PREFIX)
+        if o.key.endswith('.vcf.gz') and os.path.dirname(o.key) == PREFIX
+]}
+
 
 S3_OUTPUT = "s3://pwyming-wps201-us-east-1/data"
 QUEUE_ARN = "arn:aws:batch:us-east-1:402873085799:job-queue/wps201-queue"
