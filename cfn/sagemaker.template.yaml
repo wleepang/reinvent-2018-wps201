@@ -46,7 +46,7 @@ Resources:
                 find -name '*.ipynb' -exec sed -i 's/<<SageMakerS3Bucket>>/${S3Bucket}/g' {} +
 
                 find -name '*.py' -exec sed -i 's/<<SageMakerS3Bucket>>/${S3Bucket}/g' {} +
-                find -name '*.py' -exec sed -i 's/<<BatchJobQueueArn>>/${BatchJobQueueArn}/g' {} +
+                find -name '*.py' -exec sed -i 's|<<BatchJobQueueArn>>|${BatchJobQueueArn}|g' {} +
 
                 mv ./ipynb/* .
                 mv ./src/submit_jobs.py .
