@@ -25,7 +25,7 @@ Parameters:
     Description: 'The VPC to create security groups and deploy AWS Batch to. NOTE: Must be the same VPC as the provided subnet IDs.'
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
-    Description: 'Subnets you want your batch compute environment to launch in. We recommend private subnets. NOTE: Must be from the VPC provided.'
+    Description: 'Subnets you want your batch compute environment to launch in. NOTE: Must be from the VPC provided.'
   SpotBidPercentage:
     Description: The percent of on-demand pricing for max bid for Spot intances
     Type: Number
