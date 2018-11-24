@@ -3,3 +3,4 @@ notes.md
 .ipynb_checkpoints/
 __pycache__/
 ignore/
+docs/site/
