@@ -1,0 +1,16 @@
+site_name: "re:Invent 2018 - WPS201"
+theme: cinder
+
+site_author: W. Lee Pang <pwyming@amazon.com>
+copyright: 2018 Amazon Web Services
+
+markdown_extensions:
+- admonition
+
+repo_url: https://github.com/wleepang/reinvent-2018-wps201
+
+extra_css:
+- css/extra.css
+
+pages:
+- Home: index.md
