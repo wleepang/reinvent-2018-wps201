@@ -23,10 +23,14 @@ The source code for this session is hosted on [GitHub](https://github.com/wleepa
 ### Applying credits to your account
 
 1. Sign-in to the [AWS Console](http://console.aws.amazon.com/)
-2. Go to the Billing Console<br />
-   ![billing-console](images/search-billing-console.png)
-3. Click on "Credits" in the list on the left<br />
-   ![billing-credits](images/billing-credits-ui.png)
+2. Go to the Billing Console
+
+    ![billing-console](images/search-billing-console.png)
+
+3. Click on "Credits" in the list on the left
+
+    ![billing-credits](images/billing-credits-ui.png)
+
 4. Enter your credit code in the "Promo Code" box
 5. Enter the Security check text
 6. Click on the "Redeem" button
@@ -58,11 +62,13 @@ When the console opens, do the following:
     2. Select a VPC.  This will be where EC2 instances created by AWS Batch will be launched.
        If you have multiple VPCs you can either use your default one (the CIDR block starts with 172),
        or one that already exists in your account.
-       ![select vpc](images/cfn-select-vpc.png)
+
+        ![select vpc](images/cfn-select-vpc.png)
 
     3. Select at least one subnet id.  This should be in the VPC you selected.
        Again, you can tell by the CIDR block which VPC a subnet is in.
-       ![select subnets](images/cfn-select-subnets.png)
+
+        ![select subnets](images/cfn-select-subnets.png)
 
     4. (Optional) Specify the Spot bid percentage relative to On-Demand pricing.
        This is the maximum bid price for a Spot instance AWS Batch will use.
@@ -72,7 +78,8 @@ When the console opens, do the following:
 
 4. On the "Review" page be sure to check the boxes acknowledging IAM resource creation and 
    the requirement for CAPBILITY_AUTO_EXPAND
-   ![acknowledge capabilities](images/cfn-acknowledge-capabilities.png)
+
+    ![acknowledge capabilities](images/cfn-acknowledge-capabilities.png)
 
 5. Click the "Create" button
 
