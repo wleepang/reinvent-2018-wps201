@@ -7,8 +7,6 @@ copyright: 2018 Amazon Web Services
 markdown_extensions:
 - admonition
 
-repo_url: https://github.com/wleepang/reinvent-2018-wps201
-
 extra_css:
 - css/extra.css
 
