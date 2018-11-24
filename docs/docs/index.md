@@ -37,6 +37,11 @@ For this session, we'll use CloudFormation to create the following infrastructur
 
 ![session infrastructure](images/cfn-infrastructure.png)
 
+!!! warning
+    The CloudFormation templates used will create IAM roles.  In order for the
+    stack to be successfully created you **must** have Administrative access to
+    the AWS Account used.
+
 <a class="btn btn-warning btn-block" target="_blank"
     href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=wps201&templateURL=https://s3.amazonaws.com/reinvent-2018-wps201/templates/wps201-root-novpc.template.yaml">
     Launch Stack
