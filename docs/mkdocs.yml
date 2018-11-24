@@ -10,5 +10,5 @@ markdown_extensions:
 extra_css:
 - css/extra.css
 
-pages:
+nav:
 - Home: index.md
