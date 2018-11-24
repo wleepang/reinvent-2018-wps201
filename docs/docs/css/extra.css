@@ -1,10 +1,8 @@
 IMG {
-
+    margin: 2ex auto;
     max-width: 100%; /* auto scale to container if page is resized */
     height: auto;
-    /*width: auto\9; /* ie8 */
     width: 80%; /* default size */
-    margin: 2ex;
 }
 
 .launch-button {
