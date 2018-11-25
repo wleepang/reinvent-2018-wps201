@@ -42,6 +42,9 @@ def main(args):
     config_parser.read(['config.ini'])
     config = config_parser['DEFAULT']
 
+    with open(config['mapping'], 'r') as f:
+        cluster_mapping = json.load(f)
+
     with open(args.data_file, 'rb') as body:
         try:
             response = smrt.invoke_endpoint(
@@ -51,12 +54,22 @@ def main(args):
                 Accept='application/json'
             )
 
+            predictions = json.loads(
+                response['Body'].read().decode('utf-8')
+            )['predictions']
+
+            mappings = [
+                cluster_mapping[str(int(prediction['closest_cluster']))] 
+                for prediction in predictions
+            ]
+
+            for mapping, prediction in zip(mappings, predictions):
+                prediction['super_pop'] = mapping
+
             result = {
                 'endpoint': config['endpoint'],
                 'request_id': response['ResponseMetadata']['RequestId'],
-                'predictions': json.loads(
-                    response['Body'].read().decode('utf-8')
-                )['predictions']
+                'predictions': predictions
             }
             pprint(result)
             
