@@ -14,10 +14,6 @@ Attendees are encouraged to have the following:
 * Familiarity with the [Python](https://python.org) programming language
 * Familiarity with [Jupyter](https://jupyter.org) [Notebooks](https://jupyter-notebook.readthedocs.io/en/stable/)
 
-## Source code
-
-The source code for this session is hosted on [GitHub](https://github.com/wleepang/reinvent-2018-wps201).
-
 ## Getting started
 
 ### Applying credits to your account

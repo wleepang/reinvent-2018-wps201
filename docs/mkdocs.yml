@@ -4,6 +4,9 @@ theme: cinder
 site_author: W. Lee Pang <pwyming@amazon.com>
 copyright: 2018 Amazon Web Services
 
+repo_url: https://github.com/wleepang/reinvent-2018-wps201
+edit_uri: ""
+
 markdown_extensions:
 - admonition
 
