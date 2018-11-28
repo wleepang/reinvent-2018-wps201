@@ -18,6 +18,9 @@ Attendees are encouraged to have the following:
 
 ### Applying credits to your account
 
+Credits have been provided to you so that you can participate hands-on during
+the session at no cost!
+
 1. Sign-in to the [AWS Console](http://console.aws.amazon.com/)
 2. Go to the Billing Console
 
@@ -96,3 +99,64 @@ will look like the following:
 3. Open the Jupyter Notebook `wps201-* / genome-kmeans-py3.ipynb`:
    ![open notebook 1](images/notebook-instance-1.png)
    ![open notebook 2](images/notebook-instance-2.png)
+
+## Run the lab
+
+The lab for this session is contained with in the Jupyter Notebook you opened above.
+Detailed instructions are provided to guide you through building and deploying
+a clustering model with SageMaker.
+
+## Clean-up
+
+To ensure that you are not charged for resources you are not using, it is recommended
+that you run the following steps below when the session is complete.
+
+### Remove Sagemaker Endpoints
+
+1. Go to the Amazon SageMaker Console
+
+2. Go to "Endpoints".  Endpoints you deployed for this session should be listed
+   as `kmeans-YYYY-MM-DD-HH-mm-SS-XXXXXX`
+
+3. Select an endpoint by clicking the radio button next to it.
+
+4. From the "Actions" drop-down select "Delete"
+
+![delete endpoint](images/sagemaker-delete-endpoint.png)
+
+### Delete CloudFormation Stacks
+
+Deleting the CloudFormation stack you created in the [Getting Started](#getting-started)
+section will remove the SageMaker Notebook instance and AWS Batch resources (Job Queue
+and Compute Environment).  The S3 Bucket created needs to be removed manually
+(see below).
+
+!!! note
+    You are only charged for actively running instances.  If you would like to
+    keep your notebook instance for later use, you can simply "Stop" it from
+    the Amazon SageMaker Console to avoid charges.  Similarly, for AWS Batch
+    your account is only charged when you have actively running jobs.
+
+1. Go to the CloudFormation Console
+
+2. Select the **root** stack for this session (it is the one that does **not** have
+   "NESTED" next to its name)
+
+3. Select "Delete Stack" from the Actions drop-down.
+   ![delete stack 1](images/cfn-delete-stack-1.png)
+
+4. Confirm the deletion in the subsequent dialog.
+   ![delete stack 2](images/cfn-delete-stack-2.png)
+
+### Delete S3 Bucket
+
+The S3 bucket created for this session will contain processed data and trained
+model artifacts.
+
+1. Go to the S3 Console
+
+2. Select the bucket that was created by CloudFormation
+
+3. Click on the "Delete" button
+
+![delete s3 bucket](images/s3-delete-bucket.png)
