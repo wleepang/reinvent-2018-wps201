@@ -43,7 +43,7 @@ For this session, we'll use CloudFormation to create the following infrastructur
     the AWS Account used.
 
 <a class="btn btn-warning btn-block" target="_blank"
-    href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=wps201&templateURL=https://s3.amazonaws.com/reinvent-2018-wps201/templates/wps201-root-novpc.template.yaml">
+    href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?region=us-west-2&stackName=wps201&templateURL=https://s3.amazonaws.com/reinvent-2018-wps201/templates/wps201-root-novpc.template.yaml">
     Launch Stack
 </a>
 
