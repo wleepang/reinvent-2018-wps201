@@ -6,7 +6,7 @@ Parameters:
 
   NotebookInstanceType:
     Type: "String"
-    Default: ml.m4.xlarge
+    Default: ml.t2.medium
     AllowedValues:
       - ml.t2.medium
       - ml.t2.large
