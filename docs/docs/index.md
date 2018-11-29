@@ -6,6 +6,10 @@
 
 The development and application of machine learning (ML) models is a vital part of scientific and technical computing. Increasing model training data size generally improves model prediction and performance, but deploying models at scale is a challenge. Participants in this builder session learn to use Amazon SageMaker, an AWS service that simplifies the ML process and enables training on cloud-stored datasets at any scale. Attendees walk through the process of building a model, training it, and applying it for prediction against large open scientific datasets, such as the 1000 Genomes data. By the end of the session, attendees have the resources and experience to start using Amazon SageMaker and related AWS services to accelerate their scientific research and time to discovery.
 
+## Session Slides
+
+* [reinvent2018-wps201.pdf](downloads/reinvent2018-wps201.pdf)
+
 ## Prerequisites
 
 Attendees are encouraged to have the following:
